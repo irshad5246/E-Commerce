@@ -1,0 +1,65 @@
+﻿@model ClothBazar.Web.ViewModels.DashboardViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1> Hi! @User.Identity.Name!</h1>
+        <br />
+        <p class="lead">Welcom to PayBaazar Dashboard Below are the few demographics of PayBaazar Management System.   </p>
+    </div>
+</div>
+
+<div class="card-deck text-primary">
+    <div class="card text-center">
+        <h6 class="card-title display-4 align-middle">
+            @*@Model.UserCount*@ 9
+        </h6>
+        <div class="card-footer display-4">
+            <a href="@Url.Action("Index","Users")">Users</a>
+        </div>
+    </div>
+    <div class="card text-center">
+        <h6 class="card-title display-4 align-middle">
+            @*@Model.RoleCount*@ 7
+        </h6>
+        <div class="card-footer display-4">
+            <a href="@Url.Action("Index","Roles")">Roles</a>
+        </div>
+    </div>
+    <div class="card text-center">
+        <h6 class="card-title display-4 align-middle">
+           @Model.CategoryCount
+        </h6>
+        <div class="card-footer display-4">
+            <a href="@Url.Action("Index","Category")">Categories</a>
+        </div>
+    </div>
+</div>
+<div class="card-deck text-primary">
+    <div class="card text-center">
+        <h6 class="card-title display-4 align-middle">
+          @Model.ProductCount
+        </h6>
+        <div class="card-footer display-4">
+            <a href="@Url.Action("Index","Product")">Products</a>
+        </div>
+    </div>
+    <div class="card text-center">
+        <h6 class="card-title display-4 align-middle">
+           @Model.OrderCount
+        </h6>
+        <div class="card-footer display-4">
+            <a href="@Url.Action("Index","Order")">Orders</a>
+        </div>
+    </div>
+    <div class="card text-center">
+        <h6 class="card-title display-4 align-middle">
+            8
+        </h6>
+        <div class="card-footer display-4">
+            <a href="@Url.Action("Index","AccomodationPackages")">Packages</a>
+        </div>
+    </div>
+</div>

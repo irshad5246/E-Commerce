@@ -1,0 +1,168 @@
+﻿
+@model OrdersViewModel
+@{
+    ViewBag.Title = "Orders";
+}
+            <div>
+                <form method="post">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label>Search</label>
+                                @*<input class="form-control" id="searchTxt" name="UserID" value="@Model.UserID" />*@
+                                <input class="form-control" id="searchTxt" placeholder="Search by User Id" name="Search" value="@Model.UserID" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Action</label>
+                                <div class="row">
+                                    <div class="col-md-4 pr-0">
+                                        @*<button class="btn btn-primary form-control" type="submit" id="searchBtn">Search</button>*@
+                                        <button class="btn btn-primary form-control" type="button" id="searchBtn"><i class="fa fa-search mr-1"></i><span>Search</span></button>
+                                    </div>
+                                    <div class="col-md-4 pr-0">
+                                        <button class="btn btn-primary form-control" type="button" id="resetBtn"><i class="fa fa-refresh mr-1"></i><span>Reset</span></button>
+                                        @*<a class="btn btn-primary form-control" type="button" id="resetBtn" href="@Url.Action("Index", "Order", new { pageNo = 1 })">Reset</a>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div>
+                <table id="OrdersTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="font-weight-bold">User ID</th>
+                            <th class="font-weight-bold">Total Price</th>
+                            <th class="font-weight-bold">Status</th>
+                            <th class="font-weight-bold wrap-td">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Orders != null && Model.Orders.Count > 0)
+                        {
+
+                            foreach (var order in Model.Orders)
+                            {
+                                <tr>
+                                    <td>@order.UserID</td>
+                                    <td>
+                                        @order.TotalAmount
+                                    </td>
+                                    <td>@order.Status</td>
+                                    <td class="wrap-td">
+                                        <a class="detailBtn" data-id="@order.ID" href="@Url.Action("Details", "Order", new { ID = order.ID })">Details</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td class="text-danger" colspan="4">No Order found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div>
+                    @if (Model.Pager != null && Model.Pager.TotalPages > 1)
+                    {
+
+                        if (Model.Pager.CurrentPage > 1)
+                        {
+                            <button class="pageButtons" data-pageno="1"><span>First</span></button>
+                            <button class="pageButtons" data-pageno="@(Model.Pager.CurrentPage - 1)"><i class="fa fa-step-backward mr-2"></i>Prev</button>
+                            @*<a class="pageButtons" data-pageno="1" href="@Url.Action("Index", "Order", new { userID = Model.UserID, status = Model.Status, pageNo = 1 })">First</a>
+                                <a class="pageButtons" data-pageno="@(Model.Pager.CurrentPage - 1)" href="@Url.Action("Index", "Order", new { userID = Model.UserID, status = Model.Status, pageNo = Model.Pager.CurrentPage - 1 })">Previous</a>*@
+                        }
+
+                        for (var page = Model.Pager.StartPage; page <= Model.Pager.EndPage; page++)
+                        {
+                            string activeClass = Model.Pager.CurrentPage == page ? "active bg-info" : string.Empty;
+                            <button class="@activeClass pageButtons" data-pageno="@page">@page</button>
+                            @*<a class="@activeClass pageButtons" data-pageno="@page" href="@Url.Action("Index", "Order", new { userID = Model.UserID, status = Model.Status, pageNo = page })">@page</a>*@
+                        }
+
+                        if (Model.Pager.CurrentPage < Model.Pager.TotalPages)
+                        {
+                            <button class="pageButtons" data-pageno="@(Model.Pager.CurrentPage + 1)">Next<i class="fa fa-step-forward ml-2"></i></button>
+                            <button class="pageButtons" data-pageno="@Model.Pager.EndPage"><span>Last</span></button>
+                            @*<a class="pageButtons" data-pageno="@(Model.Pager.CurrentPage + 1)" href="@Url.Action("Index", "Order", new { userID = Model.UserID, status = Model.Status, pageNo = Model.Pager.CurrentPage + 1 })">Next</a>
+                                <a class="pageButtons" data-pageno="@Model.Pager.EndPage" href="@Url.Action("Index", "Order", new { userID = Model.UserID, status = Model.Status, pageNo = Model.Pager.EndPage })">Last</a>*@
+                        }
+                    }
+                </div>
+            </div>
+        
+        
+
+<script>
+    $(".pageButtons").click(function () {
+        $.ajax({
+            url: '@Url.Action("IndexTable", "Order")',
+            data: {
+                pageNo: $(this).attr("data-pageno")
+            }
+        })
+        .done(function (response) {
+            $("#tableContiner").html(response);
+        })
+        .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+            alert("FAIL");
+        });
+    });
+    function enterEvent(e) {
+        if (e.keyCode == 13) {
+            $("input[id=searchBtn]").click();
+        }
+    }
+    $("#searchBtn").click(function () {
+        var searchValue = $("#searchTxt").val();
+
+        $.ajax({
+            url: '@Url.Action("IndexTable", "Order")',
+            data: {
+                search: searchValue
+            }
+        })
+        .done(function (response) {
+            $("#tableContiner").html(response);
+        })
+        .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+            alert("FAIL");
+        });
+    });
+
+    $(".detailBtn").click(function () {
+        $.ajax({
+            url: '@Url.Action("Details", "Order")',
+        })
+        //.done(function (response) {
+        //   $(".Container").html(response);
+
+        //    focusAction("Container");
+        //})
+        //.fail(function (XMLHttpRequest, textStatus, errorThrown) {
+        //    alert("FAIL");
+        //});
+    });
+    $("#resetBtn").click(function () {
+        var searchValue = '';
+
+        $.ajax({
+            url: '@Url.Action("IndexTable", "Order")',
+            data: {
+                search: searchValue
+            }
+        })
+        .done(function (response) {
+            $("#tableContiner").html(response);
+        })
+        .fail(function (XMLHttpRequest, textStatus, errorThrown) {
+            alert("FAIL");
+        });
+    });
+</script>	
